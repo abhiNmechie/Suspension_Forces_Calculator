@@ -1,17 +1,17 @@
 function [geo] = geometry(hp_front, hp_rear, gen)
-    geo.wheelbase=(hp_rear.WC(1)-hp_front.WC(1));
 
+    geo.wheelbase=(hp_rear.WC(1)-hp_front.WC(1));
     geo.trackwidth_front=(2*(hp_front.WC(2)));
     geo.trackwidth_rear=(2*(hp_rear.WC(1)));
     
     %dist of front ubj, lbj from ground 
-    geo.h1_front=((hp_front.UBJ));
-    geo.h2_front=((hp_front.LBJ));
+    geo.h1_front=((hp_front.UBJ(3)));
+    geo.h2_front=((hp_front.LBJ(3)));
     geo.sep_front=(geo.h1_front-geo.h2_front);
     
     %dist of rear ubj, lbj from ground 
-    geo.h1_rear=((hp_rear.UBJ));
-    geo.h2_rear=((hp_rear.LBJ));
+    geo.h1_rear=((hp_rear.UBJ(3)));
+    geo.h2_rear=((hp_rear.LBJ(3)));
     geo.sep_rear=(geo.h1_rear-geo.h2_rear);
 
     %force upper, lower split ratio:
@@ -41,3 +41,12 @@ function [geo] = geometry(hp_front, hp_rear, gen)
 
     geo.kpi_front=atan2d(geo.kp_front(3),-geo.kp_front(2));
     geo.kpi_rear=atan2d(geo.kp_rear(3),-geo.kp_rear(2));
+
+    %caster
+
+    geo.caster_front=atan2d(geo.kp_front(3),-geo.kp_front(1));
+    geo.caster_rear=atan2d(geo.kp_rear(3),-geo.kp_rear(1));
+
+    %scrub radius
+
+    
