@@ -1,4 +1,4 @@
-function [geo] = geometry(hp_front, hp_rear, gen.loaded_radius)
+function [geo] = geometry(hp_front, hp_rear)
 
     geo.wheelbase=(hp_rear.WC(1)-hp_front.WC(1));
     geo.trackwidth_front=(2*(hp_front.WC(2)));
@@ -39,13 +39,13 @@ function [geo] = geometry(hp_front, hp_rear, gen.loaded_radius)
 
     %kpi
 
-    geo.kpi_front=atan2d(geo.kp_front(2),-geo.kp_front(3));
-    geo.kpi_rear=atan2d(geo.kp_rear(2),-geo.kp_rear(3));
+    geo.kpi_front=atan2d(-geo.kp_front(2),geo.kp_front(3));
+    geo.kpi_rear=atan2d(-geo.kp_rear(2),geo.kp_rear(3));
 
     %caster
 
-    geo.caster_front=atan2d(geo.kp_front(1),-geo.kp_front(3));
-    geo.caster_rear=atan2d(geo.kp_rear(1),-geo.kp_rear(3));
+    geo.caster_front=atan2d(-geo.kp_front(1),geo.kp_front(3));
+    geo.caster_rear=atan2d(-geo.kp_rear(1),geo.kp_rear(3));
 
     %scrub radius
     %front
