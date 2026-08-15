@@ -48,5 +48,106 @@ function [geo] = geometry(hp_front, hp_rear, gen)
     geo.caster_rear=atan2d(geo.kp_rear(3),-geo.kp_rear(1));
 
     %scrub radius
+    %front
+
+    c_front_sc=((hp_front.LBJ(2:3)-hp_front.UBJ(2:3))/norm(hp_front.LBJ(2:3)-hp_front.UBJ(2:3)));
+    alpha_front=((-hp_front.LBJ(3))/(c_front_sc(2)));
+    intercept_scrub1=((hp_front.LBJ(2))+alpha_front*(c_front_sc(1)));
+    geo.scrub_front=(hp_front.WC(2)-(intercept_scrub1));
+    
+    %rear
+    c_rear_sc=((hp_rear.LBJ(2:3)-hp_rear.UBJ(2:3))/norm(hp_rear.LBJ(2:3)-hp_rear.UBJ(2:3)));
+    alpha_rear=((-hp_rear.LBJ(3))/(c_rear_sc(2)));
+    intercept_scrub2=((hp_rear.LBJ(2))+alpha_rear*(c_rear_sc(1)));
+    geo.scrub_rear=(hp_rear.WC(2)-(intercept_scrub2));
+
+    %mechanical trail
+
+    %front
+    c_front_tr=((hp_front.LBJ([1 3])-hp_front.UBJ([1 3]))/norm(hp_front.LBJ([1 3])-hp_front.UBJ([1 3])));
+    beta_front=((-hp_front.LBJ(3))/(c_front_tr(2)));
+    intercept_trail1=((hp_front.LBJ(1))+beta_front*(c_front_tr(1)));
+    geo.trail_front=(hp_front.WC(1)-(intercept_trail1));
+
+    %rear
+    c_rear_tr=((hp_rear.LBJ([1 3])-hp_rear.UBJ([1 3]))/norm(hp_rear.LBJ([1 3])-hp_rear.UBJ([1 3])));
+    beta_rear=((-hp_rear.LBJ(3))/(c_rear_tr(2)));
+    intercept_trail2=((hp_rear.LBJ(1))+beta_rear*(c_rear_tr(1)));
+    geo.trail_rear=(hp_rear.WC(1)-(intercept_trail2));
+
+    %steering axis:
+
+    %front
+    
+    tierod_front=(hp_front.TRI-hp_front.TRO)/norm(hp_front.TRI-hp_front.TRO);
+    kp_front=(hp_front.UBJ-hp_front.LBJ)/norm(hp_front.UBJ-hp_front.LBJ);
+    geo.t_front=norm(dot(cross((hp_front.TRO-hp_front.LBJ),tierod_front),kp_front));
+
+    %rear
+
+    tierod_rear=(hp_rear.TRI-hp_rear.TRO)/norm(hp_rear.TRI-hp_rear.TRO);
+    kp_rear=(hp_rear.UBJ-hp_rear.LBJ)/norm(hp_rear.UBJ-hp_rear.LBJ);
+    geo.t_rear=norm(dot(cross((hp_rear.TRO-hp_rear.LBJ),tierod_rear),kp_rear));
+
+    %A arms lengths
+
+    %front
+    geo.fore_upper_front=norm(hp_front.UBJ-hp_front.UF);
+    geo.aft_upper_front=norm(hp_front.UBJ-hp_front.UA);
+    geo.fore_lower_front=norm(hp_front.LBJ-hp_front.LF);
+    geo.aft_lower_front=norm(hp_front.LBJ-hp_front.LA);
+    
+    %rear
+    geo.fore_upper_rear=norm(hp_rear.UBJ-hp_rear.UF);
+    geo.aft_upper_rear=norm(hp_rear.UBJ-hp_rear.UA);
+    geo.fore_lower_rear=norm(hp_rear.LBJ-hp_rear.LF);
+    geo.aft_lower_rear=norm(hp_rear.LBJ-hp_rear.LA);
+
+    %A arm lever arms + pushrod levers:
+    %front:
+    axis_front_lower=(hp_front.LF-hp_front.LA)/norm(hp_front.LF-hp_front.LA);
+    axis_front_upper=(hp_front.UF-hp_front.UA)/norm(hp_front.UF-hp_front.UA);
+
+    v1=(hp_front.UBJ-hp_front.UF);
+    v2=(hp_front.LBJ-hp_front.LF);
+    
+    w1=(hp_front.PRO-hp_front.LF);
+
+    geo.Aarm_lever_front_upper=norm(v1-dot(v1,axis_front_upper)*axis_front_upper);
+    geo.Aarm_lever_front_lower=norm(v2-dot(v2,axis_front_lower)*axis_front_lower);
+    geo.pushrod_lever_front=norm((w1-dot(w1,axis_front_lower)*axis_front_lower));
+
+    %rear
+    axis_rear_lower=(hp_rear.LF-hp_rear.LA)/norm(hp_rear.LF-hp_rear.LA);
+    axis_rear_upper=(hp_rear.UF-hp_rear.UA)/norm(hp_rear.UF-hp_rear.UA);
+
+    v3=(hp_rear.UBJ-hp_rear.UF);
+    v4=(hp_rear.LBJ-hp_rear.LF);
+
+    w2=(hp_rear.PRO-hp_rear.UF);
+
+    geo.Aarm_lever_rear_upper=norm(v3-dot(v3,axis_rear_upper)*axis_rear_upper);
+    geo.Aarm_lever_rear_lower=norm(v4-dot(v4,axis_rear_lower)*axis_rear_lower);
+    geo.pushrod_lever_rear=norm((w2-dot(w2,axis_rear_upper)*axis_rear_upper));
+
+    %rocker geometry
+
+    %pushrod and damper directions:
+
+    geo.front_pushrod_length=norm(hp_front.PRI-hp_front.PRO);
+    v_front=hp_front.PRI-hp_front.PRO;
+    geo.front_pushrod_angle=atan2d(v_front(2),v_front(3));
+
+    geo.rear_pushrod_length=norm(hp_rear.PRI-hp_rear.PRO);
+    v_rear=hp_rear.PRI-hp_rear.PRO;
+    geo.rear_pushrod_angle=atan2d(v_rear(2),v_rear(3));
+
+    geo.front_damper_length=norm(hp_front.RD-hp_front.DC);
+    w_front=(hp_front.RD-hp_front.DC);
+    geo.front_damper_angle=atan2d(w_front(2),w_front(3));
+
+    geo.rear_damper_length=norm(hp_rear.RD-hp_rear.DC);
+    w_rear=(hp_rear.RD-hp_rear.DC);
+    geo.rear_damper_angle=atan2d(w_rear(2),w_rear(3));
 
     
