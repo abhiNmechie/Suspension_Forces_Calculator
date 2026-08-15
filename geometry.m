@@ -139,8 +139,7 @@ function [geo] = geometry(hp_front, hp_rear)
     %rear:
     geo.rocker_axis_rear=(hp_rear.RPA1-hp_rear.RPA2)/norm(hp_rear.RPA1-hp_rear.RPA2);
     
-    %arm vectors+arm lever: rpa1 and pri:
-    %front
+
     geo.arm_pri_front=(hp_front.PRI-hp_front.RPA1);
     geo.armlever_pri_front=(geo.arm_pri_front-dot(geo.arm_pri_front,geo.rocker_axis_front)*geo.rocker_axis_front);
 
@@ -180,6 +179,13 @@ function [geo] = geometry(hp_front, hp_rear)
     geo.momentarms_rocker_damper_front=abs(dot(cross(geo.armlever_rd_front,geo.force_direc_rocker_damper_front),geo.rocker_axis_front));
     %rear
     geo.momentarms_rocker_damper_rear=abs(dot(cross(geo.armlever_rd_rear,geo.force_direc_rocker_damper_rear),geo.rocker_axis_rear));
+    
+    %rocker ratio:
+    %front:
+    geo.RR_front=(geo.momentarms_rocker_pr_front)/(geo.momentarms_rocker_damper_front);
+    %rear:
+    geo.RR_rear=(geo.momentarms_rocker_pr_rear)/(geo.momentarms_rocker_damper_rear);
+   
     %%
     %pushrod and damper directions:
     geo.front_pushrod_length=norm(hp_front.PRI-hp_front.PRO);
@@ -197,4 +203,3 @@ function [geo] = geometry(hp_front, hp_rear)
     geo.rear_damper_length=norm(hp_rear.RD-hp_rear.DC);
     w_rear=(hp_rear.RD-hp_rear.DC)/norm(hp_rear.RD-hp_rear.DC);
     geo.rear_damper_angle=acosd(abs(w_rear(3)));
-
