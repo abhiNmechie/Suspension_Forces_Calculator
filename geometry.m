@@ -130,10 +130,58 @@ function [geo] = geometry(hp_front, hp_rear, gen)
     geo.Aarm_lever_rear_lower=norm(v4-dot(v4,axis_rear_lower)*axis_rear_lower);
     geo.pushrod_lever_rear=norm((w2-dot(w2,axis_rear_upper)*axis_rear_upper));
 
-    %rocker geometry
+    %%
+    %rocker geometry: 
 
+    %rocker-chassis pivot axis
+    %front
+    geo.rocker_axis_front=(hp_front.RPA1-hp_front.RPA2)/norm(hp_front.RPA1-hp_front.RPA2);
+    %rear:
+    geo.rocker_axis_rear=(hp_rear.RPA1-hp_rear.RPA2)/norm(hp_rear.RPA1-hp_rear.RPA2);
+    
+    %arm vectors+arm lever: rpa1 and pri:
+    %front
+    geo.arm_pri_front=(hp_front.PRI-hp_front.RPA1);
+    geo.armlever_pri_front=(geo.arm_pri_front-dot(geo.arm_pri_front,geo.rocker_axis_front)*geo.rocker_axis_front);
+
+    %rear
+    geo.arm_pri_rear=(hp_rear.PRI-hp_rear.RPA1);
+    geo.armlever_pri_rear=(geo.arm_pri_rear-dot(geo.arm_pri_rear,geo.rocker_axis_rear)*gep.rocker_axis_rear);
+
+    %arm vectors: rpa1 and rd:
+    %front
+    geo.arm_rd_front=(hp_front.RD-hp_front.RPA1);
+    geo.armlever_rd_front=(geo.arm_rd_front-dot(geo.arm_rd_front,geo.rocker_axis_front)*geo.rocker_axis_front);
+
+    %rear
+    geo.arm_rd_rear=(hp_rear.RD-hp_rear.RPA1);
+    geo.armlever_rd_rear=(geo.arm_rd_rear-dot(geo.arm_rd_rear,geo.rocker_axis_rear)*geo.rocker_axis_rear);
+    
+    %rocker-pushrod force directions:
+    %front:
+    geo.force_direc_rocker_pushrod_front=(hp_front.PRO-hp_front.PRI)/norm(hp_front.PRO-hp_front.PRI);
+    %rear:
+    geo.force_direc_rocker_pushrod_rear=(hp_rear.PRO-hp_rear.PRI)/norm(hp_rear.PRO-hp_rear.PRI);
+
+    %rocker-damper force directions:
+    %front:
+    geo.force_direc_rocker_damper_front=(hp_front.RD-hp_front.DC)/norm(hp_front.RD-hp_front.DC);
+    %rear:
+    geo.force_direc_rocker_damper_rear=(hp_rear.RD-hp_rear.DC)/norm(hp_rear.RD-hp_rear.DC);
+
+    %moment arms, pr and rocker:
+    %front
+    geo.momentarms_rocker_pr_front=(dot(cross(geo.armlever_pri_front,geo.force_direc_rocker_pushrod_front),geo.rocker_axis_front));
+    %rear:
+    geo.momentarms_rocker_pr_rear=(dot(cross(geo.armlever_pri_rear,geo.force_direc_rocker_pushrod_rear),geo.rocker_axis_rear));
+
+    %moment arms, rocker and damper:
+    %front
+    geo.momentarms_rocker_damper_front=(dot(cross(geo.armlever_rd_front,geo.force_direc_rocker_damper_front),geo.rocker_axis_front));
+    %rear
+    geo.momentarms_rocker_damper_rear=(dot(cross(geo.armlever_rd_rear,geo.force_direc_rocker_damper_rear),geo.rocker_axis_rear));
+    %%
     %pushrod and damper directions:
-
     geo.front_pushrod_length=norm(hp_front.PRI-hp_front.PRO);
     v_front=hp_front.PRI-hp_front.PRO;
     geo.front_pushrod_angle=atan2d(v_front(2),v_front(3));
@@ -150,4 +198,3 @@ function [geo] = geometry(hp_front, hp_rear, gen)
     w_rear=(hp_rear.RD-hp_rear.DC);
     geo.rear_damper_angle=atan2d(w_rear(2),w_rear(3));
 
-    
