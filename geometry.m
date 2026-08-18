@@ -202,4 +202,4 @@ function [geo] = geometry(hp_front, hp_rear)
 
     geo.rear_damper_length=norm(hp_rear.RD-hp_rear.DC);
     w_rear=(hp_rear.RD-hp_rear.DC)/norm(hp_rear.RD-hp_rear.DC);
-    geo.rear_damper_angle=acosd(abs(w_rear(3)));
+    geo.rear_damper_angle=acosd(abs(w_rear(3))); 
